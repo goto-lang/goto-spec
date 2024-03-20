@@ -17,7 +17,61 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 | Array | [[uint8]]        | [][]uint8
 | Map   | [string : uint8] | map[string]uint8
 
+### Enums
+Goto introduces proper enums to Go:
 
+```goto
+type Season enum {
+  Summer = 0
+  Autumn = 1
+  Winter = 2
+  Spring = 3
+}
+
+type Animal enum {
+  Deer
+  Cat
+  Dog
+  Fish
+}
+```
+
+is equivalent to
+
+```goto
+type Season string
+
+const (
+	Summer Season = 0
+	Autumn Season = 1
+	Winter Season = 2
+	Spring Season = 3
+)
+
+type Animal int64
+
+const (
+  Deer Animal = iota
+  Cat
+  Dog
+  Fish
+)
+```
+
+...but you can go further in Goto! Unlike in Go, enums cases in Goto can have associated values:
+
+```goto
+type Color enum {
+    // Multiple named associated values
+    Colorful struct { r, g, b uint8 }
+    // A single unnamed associated value
+    Grayscale uint8
+}
+```
+
+```go
+// TODO: We probably have to implement our own type for this to work
+```
 ### Returning an error
 Goto has an error type: Just add ! after the type annotation of a return type.
 You can return a new error using the throw keyword:
