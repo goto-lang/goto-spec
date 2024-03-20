@@ -38,7 +38,7 @@ type Animal enum {
 
 is equivalent to
 
-```goto
+```go
 type Season string
 
 const (
