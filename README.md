@@ -12,27 +12,31 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 
 ### Types
 #### Collection types
-|       | Goto             | Go
-|-------|------------------|----------
-| Array | [[uint8]]        | [][]uint8
-| Map   | [string : uint8] | map[string]uint8
+|        		| Goto		| Go
+|-----------------------|---------------|----------
+| Array  		| [][]uint8	| [][]uint8
+| Map    		| [string]uint8	| map[string]uint8
+| Option 		| ?string	| *non-existent*
+| Result    		| !string	| (string, error)
+| Nillable Pointer	| *string	| *string
+| Non-nillable Pointer	| ~string	| *non-existent*
 
 ### Enums
 Goto introduces proper enums to Go:
 
 ```goto
 type Season enum {
-  Summer = 0
-  Autumn = 1
-  Winter = 2
-  Spring = 3
+        Summer = 0
+	Autumn = 1
+	Winter = 2
+  	Spring = 3
 }
 
 type Animal enum {
-  Deer
-  Cat
-  Dog
-  Fish
+	Deer
+	Cat
+	Dog
+	Fish
 }
 ```
 
@@ -51,10 +55,10 @@ const (
 type Animal int64
 
 const (
-  Deer Animal = iota
-  Cat
-  Dog
-  Fish
+	Deer Animal = iota
+	Cat
+	Dog
+	Fish
 )
 ```
 
@@ -62,10 +66,10 @@ const (
 
 ```goto
 type Color enum {
-    // Multiple named associated values
-    Colorful struct { r, g, b uint8 }
-    // A single unnamed associated value
-    Grayscale uint8
+	// Multiple named associated values
+	Colorful struct { r, g, b uint8 }
+	// A single unnamed associated value
+	Grayscale uint8
 }
 ```
 
@@ -76,13 +80,13 @@ type Color enum {
 Goto has an error type: Just add ! after the type annotation of a return type.
 You can return a new error using the throw keyword:
 ```goto
-func Hello(name string) string! {
-    if name == "" {
-        throw "empty name"
-    }
+func Hello(name string) !string {
+	if name == "" {
+		throw "empty name"
+	}
 
-    message := "Hi, {name:v}. Welcome!"
-    return message
+	message := "Hi, {name:v}. Welcome!"
+	return message
 }
 ```
 
@@ -90,21 +94,21 @@ is equivalent to
 
 ```go
 func Hello(name string) (string, error) {
-    if name == "" {
-        return "", errors.New("empty name")
-    }
+	if name == "" {
+		return "", errors.New("empty name")
+	}
 
-    message := fmt.Sprintf("Hi, %v. Welcome!", name)
-    return message, nil
+	message := fmt.Sprintf("Hi, %v. Welcome!", name)
+	return message, nil
 }
 ```
 
 #### Propagating Errors
 Goto uses ! for error propagation:
 ```goto
-func Hello2(name string) string! {
-    greeting := Hello(name)!
-    return "{greeting}:v, have a nice day!"
+func Hello2(name string) !string {
+	greeting := Hello(name)!
+	return "{greeting}, have a nice day!"
 }
 ```
 
@@ -112,10 +116,10 @@ is equivalent to
 
 ```go
 func Hello2(name string) (string, error) {
-    greeting, err := Hello(name)!
-    if err != nil {
-        return "", err
-    }
-    return fmt.Sprintf("%v, have a nice day!", v)
+	greeting, err := Hello(name)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%v, have a nice day!", v)
 }
 ```
