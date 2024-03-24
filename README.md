@@ -12,14 +12,17 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 
 ### Types
 #### Collection types
-|        		| Goto		| Go
-|-----------------------|---------------|----------
-| Array  		| [][]uint8	| [][]uint8
-| Map    		| [string]uint8	| map[string]uint8
-| Option 		| ?string	| *non-existent*
-| Result    		| !string	| (string, error)
-| Nillable Pointer	| *string	| *string
-| Non-nillable Pointer	| ~string	| *non-existent*
+|        		 | Goto			| Go
+|------------------------|----------------------|----------
+| Array  		 | [][]uint8		| [][]uint8
+| Map    		 | [string]uint8	| map[string]uint8
+| Option 		 | ?string		| *non-existent*
+| Result    		 | !string		| (string, error)
+| Nillable Pointer	 | *string		| *string
+| Non-nillable Pointer	 | ~string		| *non-existent*
+| Bi-directional channel | <->string		| chan string
+| Send-only channel	 | <-string		| chan<- string
+| Receive-only channel	 | ->string		| <-chan string
 
 ### Enums
 Goto introduces proper enums to Go:
