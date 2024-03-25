@@ -19,7 +19,7 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 | Option 		 | ?string		| *non-existent*
 | Result    		 | !string		| (string, error)
 | Nillable Pointer	 | *string		| *string
-| Non-nillable Pointer	 | ~string		| *non-existent*
+| Non-nillable Pointer	 | ^string		| *non-existent*
 | Bi-directional channel | <->string		| chan string
 | Send-only channel	 | <-string		| chan<- string
 | Receive-only channel	 | ->string		| <-chan string
