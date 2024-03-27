@@ -24,7 +24,7 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 | Send-only channel	 | <-string		| chan<- string
 | Receive-only channel	 | ->string		| <-chan string
 
-### Enums
+#### Enums
 Goto introduces proper enums to Go:
 
 ```goto
@@ -79,7 +79,35 @@ type Color enum {
 ```go
 // TODO: We probably have to implement our own type for this to work
 ```
-### Returning an error
+### String interpolation
+Goto has built-in string interpolation, so:
+```goto
+func apples(count int) -> string {
+	return "You have \(count:d) apples!"
+}
+```
+
+is equivalent to
+
+```go
+import "fmt"
+
+func apples(count int) -> string {
+	return fmt.Sprintf("You have %d apples!", count)
+}
+```
+
+Goto string interpolation supports all formatting 'verbs' mentioned in the ["fmt" module documentation](https://pkg.go.dev/fmt).
+If no formatting verb is given, Goto defaults to :v, so the above example can be written as:
+
+```goto
+func apples(count int) -> string {
+	return "You have \(count) apples!"
+}
+```
+
+### Error handling
+#### Returning an error
 Goto has an error type: Just add ! after the type annotation of a return type.
 You can return a new error using the throw keyword:
 ```goto
@@ -88,7 +116,7 @@ func Hello(name string) !string {
 		throw "empty name"
 	}
 
-	message := "Hi, {name:v}. Welcome!"
+	message := "Hi, \(name:v). Welcome!"
 	return message
 }
 ```
@@ -111,7 +139,7 @@ Goto uses ! for error propagation:
 ```goto
 func Hello2(name string) !string {
 	greeting := Hello(name)!
-	return "{greeting}, have a nice day!"
+	return "\(greeting), have a nice day!"
 }
 ```
 
