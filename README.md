@@ -154,3 +154,6 @@ func Hello2(name string) (string, error) {
 	return fmt.Sprintf("%v, have a nice day!", v)
 }
 ```
+
+### Operator Overloading
+*TODO: Read Go proposal on operator overloading (https://github.com/golang/go/issues/27605)*
