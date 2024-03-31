@@ -1,5 +1,5 @@
 # goto
-Goto is a programming language that transpiles to Go.
+Goto is a programming language that can be mixed with Go.
 
 # Design Principles
 - **Ecosystem Compatibility over Perfection**
