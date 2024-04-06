@@ -203,7 +203,7 @@ go func() {
 	i, d := fetchOffers()
 	itemsChannel <- i
 	discountsChannel <- d
-}
+}()
 
 // blocks until items received a value
 for _, item := range items.Read() {
