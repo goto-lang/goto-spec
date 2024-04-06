@@ -14,7 +14,7 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 #### Collection types
 **Status:** ⚠️ Partially Implemented
 
-|        		 | Goto			| Go			
+|        		 | Goto			| Go
 |------------------------|----------------------|-------------------
 | Array  		 | [][]uint8		| [][]uint8
 | Map    		 | [string]uint8	| map[string]uint8
@@ -31,7 +31,9 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 
 Goto introduces proper enums to Go:
 
-```goto
+```go
+// season.goto
+
 type Season enum {
         Summer = 0
 	Autumn = 1
@@ -50,6 +52,8 @@ type Animal enum {
 is equivalent to
 
 ```go
+// season.go
+
 type Season string
 
 const (
@@ -71,7 +75,9 @@ const (
 
 ...but you can go further in Goto! Unlike in Go, enums cases in Goto can have associated values:
 
-```goto
+```go
+// colors.goto
+
 type Color enum {
 	// Multiple named associated values
 	Colorful struct { r, g, b uint8 }
@@ -81,13 +87,17 @@ type Color enum {
 ```
 
 ```go
+// colors.go
+
 // TODO: We probably have to implement our own type for this to work
 ```
 ### String interpolation
 **Status:** ✅ Implemented
 
 Goto has built-in string interpolation, so:
-```goto
+```go
+// apples.goto
+
 func apples(count int) -> string {
 	return "You have \(count:d) apples!"
 }
@@ -96,6 +106,8 @@ func apples(count int) -> string {
 is equivalent to
 
 ```go
+// apples.go
+
 import "fmt"
 
 func apples(count int) -> string {
@@ -106,7 +118,9 @@ func apples(count int) -> string {
 Goto string interpolation supports all formatting 'verbs' mentioned in the ["fmt" module documentation](https://pkg.go.dev/fmt).
 If no formatting verb is given, Goto defaults to :v, so the above example can be written as:
 
-```goto
+```go
+// apples.goto
+
 func apples(count int) -> string {
 	return "You have \(count) apples!"
 }
@@ -118,7 +132,9 @@ func apples(count int) -> string {
 
 Goto has an error return type: Just add ! after the type annotation of a return type.
 You can return a new error using the throw keyword:
-```goto
+```go
+// hello.goto
+
 func Hello(name string) !string {
 	if name == "" {
 		throw "empty name"
@@ -132,6 +148,8 @@ func Hello(name string) !string {
 is equivalent to
 
 ```go
+// hello.go
+
 func Hello(name string) (string, error) {
 	if name == "" {
 		return "", errors.New("empty name")
@@ -146,7 +164,9 @@ func Hello(name string) (string, error) {
 **Status:** ⛔️ Not Implemented
 
 Goto uses ! for error propagation:
-```goto
+```go
+// hello2.goto
+
 func Hello2(name string) !string {
 	greeting := Hello(name)!
 	return "\(greeting), have a nice day!"
@@ -156,6 +176,8 @@ func Hello2(name string) !string {
 is equivalent to
 
 ```go
+// hello2.go
+
 func Hello2(name string) (string, error) {
 	greeting, err := Hello(name)
 	if err != nil {
@@ -174,55 +196,65 @@ func Hello2(name string) (string, error) {
 
 In Goto, the `go` keyword can be used as an expression. It returns a channel-like 'state' for each return value of the original function. A 'state' object blocks when receiving before its value was written and returns its inner value on all subsequent receives without blocking.
 
-```goto
-// Under the hood, the returned value is not a channel but a 'state' that returns the last received value
-items, discounts := go fetchOffers()
-// blocks until items received a value
-for _, item := range <-items {
-	print(item)
-}
+```go
+// shopping.goto
 
-// instantly evaluates as discounts and items would be tied together
-if len(<-discounts) == 0 {
-	print("No discounts!")
-}
+func loadItems() -> []Item {
+	// Under the hood, the returned value is not a channel but a 'state' that returns the last received value
+	items, discounts := go fetchOffers()
+	// blocks until items received a value
+	for _, item := range <-items {
+		print(item)
+	}
 
-// instantly returns the stored value as items was already received before
-return <-items
+	// instantly evaluates as discounts and items would be tied together
+	if len(<-discounts) == 0 {
+		print("No discounts!")
+	}
+
+	// instantly returns the stored value as items was already received before
+	return <-items
+}
 ```
 
 is equivalent to the following Go code:
 
 ```go
-// Under the hood, the returned value is not a channel but a 'state' that returns the last received value
-var items State[[]Item]
-var discounts State[[]Discount]
-go func() {
-	items, itemsChannel = state.New()
-	discounts, discountsChannel = state.New()
-	i, d := fetchOffers()
-	itemsChannel <- i
-	discountsChannel <- d
-}()
+// shopping.go
 
-// blocks until items received a value
-for _, item := range items.Read() {
-	print(item)
+func loadItems() -> []Item {
+	// Under the hood, the returned value is not a channel but a 'state' that returns the last received value
+	var items State[[]Item]
+	var discounts State[[]Discount]
+	go func() {
+		items, itemsChannel = state.New()
+		discounts, discountsChannel = state.New()
+		i, d := fetchOffers()
+		itemsChannel <- i
+		discountsChannel <- d
+	}()
+
+	// blocks until items received a value
+	for _, item := range items.Read() {
+		print(item)
+	}
+
+	// instantly evaluates as discounts and items would be tied together
+	if len(discounts.Read()) == 0 {
+		print("No discounts!")
+	}
+
+	// instantly returns the stored value as items was already received before
+	return items.Read()
 }
-
-// instantly evaluates as discounts and items would be tied together
-if len(discounts.Read()) == 0 {
-	print("No discounts!")
-}
-
-// instantly returns the stored value as items was already received before
-return items.Read()
 ```
 
 *TODO:* The internal compiler structure for a `state` could look like this:
 
 *Note: This relies on the sender to only ever send one value. This is okay if we only use this as compiler intrinsics for `go` expressions*
 ```go
+// state.go
+
 type State[T any] struct {
 	inner    T
 	source   <-chan T
@@ -232,7 +264,7 @@ type State[T any] struct {
 func New[T any]() -> (State[T], chan<- T) {
 	channel := make(chan T, 1)
 	state := State{source: channel}
-	return state, channel 
+	return state, channel
 }
 
 func (st *State[T]) Read[T any]() -> T {
