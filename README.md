@@ -172,7 +172,7 @@ func Hello2(name string) (string, error) {
 ### Go Expression
 **Status:** ⛔️ Not Implemented
 
-In Goto, the `go` keyword can be used as an expression. It returns stateful 
+In Goto, the `go` keyword can be used as an expression. It returns a channel-like 'state' for each return value of the original function. A 'state' object blocks when receiving before its value was written and returns its inner value on all subsequent receives without blocking.
 
 ```goto
 // Under the hood, the returned value is not a channel but a 'state' that returns the last received value
