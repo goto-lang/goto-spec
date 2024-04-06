@@ -12,8 +12,10 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 
 ### Types
 #### Collection types
-|        		 | Goto			| Go
-|------------------------|----------------------|----------
+**Status:** ⚠️ Partially Implemented
+
+|        		 | Goto			| Go			
+|------------------------|----------------------|-------------------
 | Array  		 | [][]uint8		| [][]uint8
 | Map    		 | [string]uint8	| map[string]uint8
 | Option 		 | ?string		| *non-existent*
@@ -25,6 +27,8 @@ Goto has a slightly different Syntax than Go, however most syntactic elements ma
 | Receive-only channel	 | ->string		| <-chan string
 
 #### Enums
+**Status:** ⛔️ Not Implemented
+
 Goto introduces proper enums to Go:
 
 ```goto
@@ -80,6 +84,8 @@ type Color enum {
 // TODO: We probably have to implement our own type for this to work
 ```
 ### String interpolation
+**Status:** ✅ Implemented
+
 Goto has built-in string interpolation, so:
 ```goto
 func apples(count int) -> string {
@@ -108,7 +114,9 @@ func apples(count int) -> string {
 
 ### Error handling
 #### Returning an error
-Goto has an error type: Just add ! after the type annotation of a return type.
+**Status:** 🚧 Work In Progress
+
+Goto has an error return type: Just add ! after the type annotation of a return type.
 You can return a new error using the throw keyword:
 ```goto
 func Hello(name string) !string {
@@ -135,6 +143,8 @@ func Hello(name string) (string, error) {
 ```
 
 #### Propagating Errors
+**Status:** ⛔️ Not Implemented
+
 Goto uses ! for error propagation:
 ```goto
 func Hello2(name string) !string {
@@ -156,4 +166,44 @@ func Hello2(name string) (string, error) {
 ```
 
 ### Operator Overloading
+**Status:** ⛔️ Not Implemented
 *TODO: Read Go proposal on operator overloading (https://github.com/golang/go/issues/27605)*
+
+### Go Expression
+**Status:** ⛔️ Not Implemented
+
+In Goto, the `go` keyword can be used as an expression. It returns stateful 
+
+```goto
+// Under the hood, the returned value is not a channel but a 'state' that returns the last received value
+items, discounts := go fetchOffers()
+// blocks until items received a value
+for _, item := range <-items {
+	print(item)
+}
+
+// instantly evaluates as discounts and items would be tied together
+if len(<-discounts) == 0 {
+	print("No discounts!")
+}
+
+// instantly returns the stored value as items was already received before
+return <-items
+```
+
+*TODO:* The internal compiler structure for a `state` could look like this:
+
+*Note: This relies on the sender to only ever send one value. This is okay if we only use this as compiler intrinsics for `go` expressions*
+```go
+type State[T any] struct {
+	inner    T
+	source   <-chan T
+	once     Once
+}
+
+func (st *State[T]) Read[T any]() -> T {
+	st.once.Do(func() { st.inner = <-st.source })
+
+	return st.inner
+}
+```
