@@ -243,4 +243,4 @@ func (st *State[T]) Read[T any]() -> T {
 ```
 
 # Mascot
-Goto's mascot is an orange gopher. The illustration a fan-modified version of an illustration Go gopher that was created by Takuya Ueda (https://twitter.com/tenntenn) that was obtained under the Creative Commons 3.0 Attributions license (https://creativecommons.org/licenses/by/3.0/deed.en). The Go gopher was designed by Renee French. (http://reneefrench.blogspot.com/)
+Goto's mascot is an orange gopher. It is a fan-modified illustration, the unmodified version was created by Takuya Ueda (https://twitter.com/tenntenn) and was obtained under the Creative Commons 3.0 Attributions license (https://creativecommons.org/licenses/by/3.0/deed.en). The original Go gopher was designed by Renee French. (http://reneefrench.blogspot.com/)
