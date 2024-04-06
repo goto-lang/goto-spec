@@ -191,6 +191,34 @@ if len(<-discounts) == 0 {
 return <-items
 ```
 
+is equivalent to the following Go code:
+
+```go
+// Under the hood, the returned value is not a channel but a 'state' that returns the last received value
+var items State[[]Item]
+var discounts State[[]Discount]
+go func() {
+	items, itemsChannel = state.New()
+	discounts, discountsChannel = state.New()
+	i, d := fetchOffers()
+	itemsChannel <- i
+	discountsChannel <- d
+}
+
+// blocks until items received a value
+for _, item := range items.Read() {
+	print(item)
+}
+
+// instantly evaluates as discounts and items would be tied together
+if len(discounts.Read()) == 0 {
+	print("No discounts!")
+}
+
+// instantly returns the stored value as items was already received before
+return items.Read()
+```
+
 *TODO:* The internal compiler structure for a `state` could look like this:
 
 *Note: This relies on the sender to only ever send one value. This is okay if we only use this as compiler intrinsics for `go` expressions*
@@ -199,6 +227,12 @@ type State[T any] struct {
 	inner    T
 	source   <-chan T
 	once     Once
+}
+
+func New[T any]() -> (State[T], chan<- T) {
+	channel := make(chan T, 1)
+	state := State{source: channel}
+	return state, channel 
 }
 
 func (st *State[T]) Read[T any]() -> T {
