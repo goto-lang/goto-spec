@@ -91,6 +91,24 @@ type Color enum {
 
 // TODO: We probably have to implement our own type for this to work
 ```
+### Strict Null-Safety
+**Status:** ⛔️ Not Implemented
+
+As Goto offers non-nillable pointers besides the usual Go-like pointers, nil-checks can be enforced by the compiler. Like in Go, you are explicitly encouraged to make nil a valid receiver as much as possible.
+
+```go
+// nillsafe.goto
+
+func doSomething(nillable *something) {
+	if some := nillable; some != nil {
+
+	}
+}
+```
+
+### Immutability by default
+
+
 ### String interpolation
 **Status:** ✅ Implemented
 
@@ -159,6 +177,8 @@ func Hello(name string) (string, error) {
 	return message, nil
 }
 ```
+
+Note that Goto is a bit stricter when it comes to discarding return values: If a function has a return value, a call to it cannot be used as a statement - so discarding the return value(s) is only allowed explicitly.
 
 #### Propagating Errors
 **Status:** ⛔️ Not Implemented
