@@ -183,15 +183,16 @@ Note that Goto is a bit stricter when it comes to discarding return values: If a
 #### Propagating Errors
 **Status:** ⛔️ Not Implemented
 
-Goto uses ! for error propagation:
+Goto uses prefix try for error propagation:
 ```go
 // hello2.goto
 
 func Hello2(name string) !string {
-	greeting := Hello(name)!
+	greeting := try Hello(name)
 	return "\(greeting), have a nice day!"
 }
 ```
+This is the same as `try` in Zig and postfix `?` in Rust. While a postfix operator would be more chainable, a prefix keyword makes the control flow more clearly visible -- therefore better matching the spirit of Go.
 
 is equivalent to
 
